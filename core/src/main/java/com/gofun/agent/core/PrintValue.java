@@ -3,6 +3,7 @@ package com.gofun.agent.core;
 import com.gofun.agent.core.advisor.MonitorClassFileTransformer;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
 import java.security.CodeSource;
 import java.spy.SpyApi;
@@ -16,14 +17,33 @@ public class PrintValue {
 
     int run = 1;
 
-   private static PrintValue printValue;
+    private static PrintValue printValue;
+    private static PrintStream ps = System.err;
 
     private Instrumentation instrumentation;
 
     private PrintValue(Instrumentation instrumentation) throws Throwable {
         this.instrumentation = instrumentation;
         initSpy();
-        instrumentation.addTransformer(new MonitorClassFileTransformer(), true);
+
+        Class[] classes = instrumentation.getAllLoadedClasses();
+        Class<?> targetCls = null;
+        ClassLoader targetClassLoader = null;
+        for (Class clazz:classes){
+            if ("com.gofun.application.Application".equals(clazz.getName())){
+                ps.println("loadedClass:"+clazz.getName());
+                targetCls = clazz;
+                targetClassLoader = targetCls.getClassLoader();
+
+                instrumentation.addTransformer(new MonitorClassFileTransformer(targetCls.getName(), targetClassLoader), true);
+                try {
+                    instrumentation.retransformClasses(targetCls);
+                } catch (Exception ex) {
+                    throw new RuntimeException("Transform failed for class: [" + targetCls.getName() + "]", ex);
+                }
+                return;
+            }
+        }
     }
 
     /**
@@ -42,27 +62,33 @@ public class PrintValue {
     }
 
     public void startPrintThread(){
+        ps.println("call startPrintThread method");
+        String applicationMethod = "printVar";
         printThread = new Thread(new Runnable() {
             public void run() {
                 while (run == 1){
                     try {
-                        System.out.println("core print key is: "+ SpyApi.getKeySet());
-//                        System.out.println("core print value is: "+SpyApi.getKeySet());
+                        try {
+                            Thread.sleep(1200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        SpyApi.getObject().getClass().getMethod(applicationMethod).invoke( SpyApi.getObject());
 
                     }catch (Exception e){
                         e.printStackTrace();
                     }
 
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         });
         printThread.start();
     }
+
+//    public Object callApplicationMethod(){
+//
+//    }
 
     private void initSpy() throws Throwable {
         // TODO init SpyImpl ?
