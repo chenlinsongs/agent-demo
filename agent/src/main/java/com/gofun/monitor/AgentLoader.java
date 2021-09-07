@@ -10,7 +10,7 @@ public class AgentLoader {
 
 
     public static void main(String[] args) {
-        String agentFilePath = "/Users/chenlinsong/IdeaProjects/my-project/agent-demo/agent/target/agent-jar-with-dependencies.jar";
+        String agentFilePath = "/Users/chenlinsong1/IdeaProjects/my/agent-demo/agent/target/agent-jar-with-dependencies.jar";
         String applicationName = "application-1.0-SNAPSHOT-jar-with-dependencies";
 
         //iterate all jvms and get the first one that matches our application name
@@ -31,7 +31,7 @@ public class AgentLoader {
             String jvmPid = jvmProcessOpt.get();
             System.out.println("Attaching to target JVM with PID: " + jvmPid);
             VirtualMachine jvm = VirtualMachine.attach(jvmPid);
-            String corePath = "/Users/chenlinsong/IdeaProjects/my-project/agent-demo/agent/target/core-1.0-SNAPSHOT-jar-with-dependencies.jar;";
+            String corePath = "/Users/chenlinsong1/IdeaProjects/my/agent-demo/agent/target/core-1.0-SNAPSHOT-jar-with-dependencies.jar;";
             jvm.loadAgent(agentFile.getAbsolutePath(),corePath);
             jvm.detach();
             System.out.println("Attached to target JVM and loaded Java agent successfully");

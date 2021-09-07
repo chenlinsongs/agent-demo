@@ -17,6 +17,8 @@ public class PrintValue {
 
     int run = 1;
 
+    int started = 0;
+
     private static PrintValue printValue;
     private static PrintStream ps = System.err;
 
@@ -112,6 +114,16 @@ public class PrintValue {
             } else {
                 throw new IllegalStateException("can not find " + SPY_JAR);
             }
+        }
+    }
+
+    public int getStarted() {
+        return started;
+    }
+
+    public synchronized void setStarted(int started) {
+        if ( this.started == 0){
+            this.started = started;
         }
     }
 
