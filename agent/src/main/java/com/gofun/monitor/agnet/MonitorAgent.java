@@ -16,7 +16,7 @@ public class MonitorAgent {
 
     private static final String CORE_JAR = "core-1.0-SNAPSHOT-jar-with-dependencies.jar";
 
-    private static final String BOOTSTRAP = "com.gofun.agent.core.PrintValue";
+    private static final String BOOTSTRAP = "com.gofun.agent.core.Bootstrap";
 
     private static final String GET_INSTANCE = "getInstance";
 
@@ -73,7 +73,7 @@ public class MonitorAgent {
             int index = args.indexOf(';');
             if (index != -1) {
                 arthasCoreJar = args.substring(0, index);
-                agentArgs = args.substring(index);
+                agentArgs = args.substring(index+1);
             } else {
                 arthasCoreJar = "";
                 agentArgs = args;
@@ -139,6 +139,13 @@ public class MonitorAgent {
         Object bootstrap = bootstrapClass.getMethod(GET_INSTANCE, Instrumentation.class, String.class).invoke(null, inst, args);
         bootstrapClass.getMethod(PRINT).invoke(bootstrap);
         ps.println("monitor agent already start.");
+        System.out.println("param is:"+args);
+        System.out.println("sleep 10 second");
+        Thread.sleep(10000);
+        System.out.println("exec restore...");
+        //复原代码
+        bootstrapClass.getMethod("restore").invoke(bootstrap);
+        ps.println("exec restored.");
     }
 
     private static ClassLoader getClassLoader(Instrumentation inst, File arthasCoreJarFile) throws Throwable {

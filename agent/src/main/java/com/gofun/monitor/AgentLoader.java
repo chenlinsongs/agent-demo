@@ -31,7 +31,7 @@ public class AgentLoader {
             String jvmPid = jvmProcessOpt.get();
             System.out.println("Attaching to target JVM with PID: " + jvmPid);
             VirtualMachine jvm = VirtualMachine.attach(jvmPid);
-            String corePath = "/Users/chenlinsong1/IdeaProjects/my/agent-demo/agent/target/core-1.0-SNAPSHOT-jar-with-dependencies.jar;";
+            String corePath = "/Users/chenlinsong1/IdeaProjects/my/agent-demo/agent/target/core-1.0-SNAPSHOT-jar-with-dependencies.jar;0";
             jvm.loadAgent(agentFile.getAbsolutePath(),corePath);
             jvm.detach();
             System.out.println("Attached to target JVM and loaded Java agent successfully");
